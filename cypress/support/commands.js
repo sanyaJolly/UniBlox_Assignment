@@ -2,39 +2,37 @@
 Cypress.Commands.add("selectRandomApplicantType", () => {
   const options = ["#option-item-0", "#option-item-1"];
   const randomIndex = Math.floor(Math.random() * options.length);
+  const selected = randomIndex === 0 ? "Employee" : "Spouse";
 
   cy.get(options[randomIndex]).click();
+  return cy.wrap(selected);
 });
 
-// Custom Cypress command to select two random products (checkboxes) ensuring they are not the same
-Cypress.Commands.add("selectRandomProducts", () => {
-  const products = [
+// Custom Cypress command to select random products (checkboxes) ensuring they are not the same
+Cypress.Commands.add("selectRandomProducts", (applicantType) => {
+  const employeeProducts = [
     "#checkbox-item-0",
     "#checkbox-item-1",
     "#checkbox-item-2",
     "#checkbox-item-3",
   ];
+  const spouseProducts = ["#checkbox-item-0", "#checkbox-item-1"];
 
-  let first = Math.floor(Math.random() * products.length);
-  let second = Math.floor(Math.random() * products.length);
+  const products =
+    applicantType === "Employee" ? employeeProducts : spouseProducts;
 
-  while (second === first) {
-    second = Math.floor(Math.random() * products.length);
-  }
-
-  cy.get(products[first]).click();
-  cy.get(products[second]).click();
-});
-
-// Custom Cypress command to generate a random alphanumeric string of a given length
-// Optionally, extra characters can be provided to include in the character set
-Cypress.Commands.add('generateRandomString', (length, extra = '') => {
-    let result = ''
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' + extra
-    const charactersLength = characters.length
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  if (products.length <= 2) {
+    // For spouse (2 products) pick one randomly 
+    const idx = Math.floor(Math.random() * products.length);
+    cy.get(products[idx]).click();
+  } else {
+    // For employee (4 products) pick two unique random ones
+    let first = Math.floor(Math.random() * products.length);
+    let second = Math.floor(Math.random() * products.length);
+    while (second === first) {
+      second = Math.floor(Math.random() * products.length);
     }
-    return cy.wrap(result)
-})
+    cy.get(products[first]).click();
+    cy.get(products[second]).click();
+  }
+});
