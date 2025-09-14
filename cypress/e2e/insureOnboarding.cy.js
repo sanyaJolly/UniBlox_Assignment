@@ -63,14 +63,14 @@ describe("Insure Onboarding Flow", () => {
     cy.get("#error-message-answer")
       .should("be.visible")
       .and("contain.text", "Please enter a valid email");
-    cy.get("#email-input")
-      .clear()
-      .type(`${generateRandomString(3)}@gmail.com`);
+    const email = `${generateRandomString(3)}@gmail.com`;
+    cy.get("#email-input").clear().type(email);
     cy.get("#btn-next").click();
 
     // Diverging flow
     cy.get("@applicantType").then((applicantType) => {
       if (applicantType === "Employee") {
+        cy.wait(5000);
         cy.get("#page-title").should("contain.text", "Annual Salary");
 
         // Salary validations
@@ -100,17 +100,27 @@ describe("Insure Onboarding Flow", () => {
           const has3 = products.includes("#checkbox-item-3");
 
           if ((has0 && has1) || (has0 && has2)) {
-            cy.wait(5000);
+            cy.wait(7000);
             cy.get("#page-title").should(
               "contain.text",
               "Select the amount of Supplemental Life coverage"
             );
+            cy.get(".rc-slider-handle")
+              .first()
+              .trigger("mousedown", { which: 1 }) // Simulate mouse down on the handle
+              .trigger("mousemove", { clientX: 1000 }) // Simulate dragging to a new position (adjust clientX as needed)
+              .trigger("mouseup");
           } else if ((has0 && has3) || (has1 && has3) || (has2 && has3)) {
             cy.wait(5000);
             cy.get("#page-title").should(
               "contain.text",
               "Select the amount of Basic Life coverage"
             );
+            cy.get(".rc-slider-handle")
+              .first()
+              .trigger("mousedown", { which: 1 }) // Simulate mouse down on the handle
+              .trigger("mousemove", { clientX: 1000 }) // Simulate dragging to a new position (adjust clientX as needed)
+              .trigger("mouseup");
           } else if (has1 && has1) {
             cy.wait(5000);
             // special case - directly DOB
@@ -167,7 +177,7 @@ describe("Insure Onboarding Flow", () => {
     // Gender
     cy.wait(5000);
     cy.get("#page-title").should("contain.text", "Gender");
-    cy.selectRandomOption();
+    cy.get("#option-item-1").click();
 
     // Phone Number
     cy.get("#page-title").should("contain.text", "Phone Number");
@@ -249,9 +259,7 @@ describe("Insure Onboarding Flow", () => {
       .and("contain.text", "Please fill this in");
 
     cy.get("#address-input-state").click();
-    cy.get("#headlessui-menu-item-:r74:")
-      .should("have.text", "Alabama")
-      .click();
+    cy.contains("Alabama").click();
     cy.get("#btn-next").click();
     cy.get("#error-message-zipcode")
       .should("be.visible")
@@ -274,15 +282,169 @@ describe("Insure Onboarding Flow", () => {
     cy.get("#error-message-weight")
       .should("be.visible")
       .and("contain.text", "Please fill this in");
-    cy.get("#input-weight").type(Math.floor(Math.random() * 10).toString());
+
+    cy.get("#dropdown-height").click();
+    cy.contains(`5'2"`).click();
+
+    cy.get("#input-weight").type("1");
     cy.get("#error-message-weight")
       .should("be.visible")
       .and("contain.text", "The value you entered is too low");
-
-    // Correct format
-    cy.get("#dropdown-height").click();
-    cy.get("#headlessui-menu-item-:re8:").click();
     cy.get("#input-weight").clear().type("20");
+    cy.get("#btn-next").click();
 
+    cy.wait(15000);
+    cy.contains("Are you pregnant?");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+    cy.contains("No").click();
+
+    // Type of Disease
+    cy.wait(7000);
+    cy.get("#page-description")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "In the past ten years, or as indicated below, have you been treated for, or been diagnosed with by a member of the medical profession as having any of the following conditions?"
+      );
+
+    //Error validation
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+
+    cy.get("#checkbox-item-0").click();
+    cy.get("#btn-next").click();
+
+    // Disease Detail
+    cy.wait(5000);
+    cy.get("#page-title").should("contain.text", "Heart Disease or Disorder");
+    cy.get("#page-description").should(
+      "contain.text",
+      "Details of Yes Answers"
+    );
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-field").type("NA");
+    cy.get("#btn-next").click();
+    cy.wait(5000);
+    cy.get("#page-description").should("contain.text", "Onset");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-field").type("NA");
+    cy.get("#btn-next").click();
+    cy.wait(5000);
+    cy.get("#page-description").should("contain.text", "Duration");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-field").type("13");
+    cy.get("#btn-next").click();
+    cy.wait(5000);
+    cy.get("#page-description").should("contain.text", "Degree of recovery");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-field").type("14");
+    cy.get("#btn-next").click();
+    cy.wait(5000);
+    cy.get("#page-description").should(
+      "contain.text",
+      "Name/address/phone of attending physician"
+    );
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-field").type("Sanya");
+    cy.get("#btn-next").click();
+    cy.wait(7000);
+    cy.get("#page-description")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "In the past ten years, or as indicated below, have you been treated for, or been diagnosed with by a member of the medical profession as having any of the following conditions?"
+      );
+    //Error validation
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+
+    cy.get("#checkbox-none-of-above").click();
+    cy.get("#btn-next").click();
+
+    cy.wait(7000);
+    cy.get("#page-description")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "Have you consulted, been advised or been examined by any healthcare provider for any other medical reason within the last ten years, or as previously indicated?"
+      );
+    //Error validation
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+    cy.get("#radio-no").click();
+
+    cy.wait(7000);
+    cy.get("#page-description")
+      .should("be.visible")
+      .and("contain.text", "Do you currently take any medications?");
+    //Error validation
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+    cy.get("#radio-no").click();
+
+    cy.wait(10000);
+    cy.get("#page-title").should("contain.text", "Review Application");
+    cy.get("#question-item-title-0")
+      .should("be.visible")
+      .and("contain.text", "Applicant Type");
+    cy.get("#question-item-title-1")
+      .should("be.visible")
+      .and("contain.text", "Product");
+    cy.get("#question-item-title-2")
+      .should("be.visible")
+      .and("contain.text", "Name");
+
+    cy.get("#btn-show-more").click();
+    cy.get("#question-item-title-4")
+      .should("be.visible")
+      .and("contain.text", "Employee Name");
+
+    // Edit Functionality
+    cy.get("#btn-edit-question-3").click();
+    cy.wait(5000);
+    const editEmail = `${generateRandomString(3)}@gmail.com`;
+    cy.get("#email-input").clear().type(editEmail);
+    cy.get("#btn-save").click();
+    cy.wait(5000);
+    cy.get("#btn-show-more").click();
+    cy.get("#question-item-answer-3").contains(editEmail);
+    cy.get("#btn-review-unsigned-app").scrollIntoView();
+
+    cy.get("#first_name").type(generateRandomString(4));
+    cy.get("#last_name").type(generateRandomString(4));
+    cy.contains("Sign your application").click();
+
+    // Submitted Application
+    cy.wait(10000);
+    cy.get("#page-title").should(
+      "contain.text",
+      "Your application has been submitted."
+    );
   });
 });
