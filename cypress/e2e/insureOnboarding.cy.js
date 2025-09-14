@@ -168,5 +168,121 @@ describe("Insure Onboarding Flow", () => {
     cy.wait(5000);
     cy.get("#page-title").should("contain.text", "Gender");
     cy.selectRandomOption();
+
+    // Phone Number
+    cy.get("#page-title").should("contain.text", "Phone Number");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+
+    // Phone number wrong format
+    cy.get("#input-phone").type("asdfg");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-answer")
+      .should("be.visible")
+      .and("contain.text", "Please use a valid number");
+
+    // Phone number valid format
+    cy.get("#input-phone").clear().type("(919) 711-2345");
+    cy.get("#btn-next").click();
+
+    // Address
+    cy.get("#page-title").should("contain.text", "Address");
+    cy.get("#btn-toggle-autocomplete")
+      .should("have.text", "I can't find my address")
+      .click();
+    cy.get("#address-input-apt-unit").should("be.visible");
+    // Street, city, state, zip code fields should be visible
+    cy.get("#address-input-street").should("be.visible");
+    cy.get("#address-input-city").should("be.visible");
+    cy.get("#address-input-state").should("be.visible");
+    cy.get("#address-input-zipcode").should("be.visible");
+
+    // Clicking on try to find my address should take user back to location and unit field
+    cy.get("#btn-toggle-autocomplete")
+      .should("have.text", "Try to find my address")
+      .click();
+    cy.get("#address-input-apt-unit").should("be.visible");
+    cy.get("#address-input-autocomplete").should("be.visible");
+
+    // Error validation on address screen
+    cy.get("#btn-next").click();
+    cy.get("#error-message-address")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+
+    cy.get("#error-message-auth-release")
+      .should("be.visible")
+      .and("contain.text", "Please check the box to continue");
+
+    cy.get("#error-message-consent-business")
+      .should("be.visible")
+      .and("contain.text", "Please check the box to continue");
+
+    // Filling address screen fields with wrong address
+    cy.get("#address-input-autocomplete").type("New Delhi");
+    cy.get("#address-input-apt-unit").type("12");
+    cy.get("#address-check-auth-release-agree").click();
+    cy.get("#address-check-consent-business").click();
+    cy.get("#error-message-address")
+      .should("be.visible")
+      .and(
+        "contain.text",
+        "This doesn't look like a US residential address, please check and try again."
+      );
+
+    // Checking address field validations
+    cy.get("#btn-toggle-autocomplete")
+      .should("have.text", "I can't find my address")
+      .click();
+    cy.get("#address-input-street").type("J-130");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-city")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+
+    cy.get("#address-input-city").type("huntsville");
+    cy.get("#btn-next").click();
+    cy.get("#error-message-state")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+
+    cy.get("#address-input-state").click();
+    cy.get("#headlessui-menu-item-:r74:")
+      .should("have.text", "Alabama")
+      .click();
+    cy.get("#btn-next").click();
+    cy.get("#error-message-zipcode")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+
+    cy.get("#address-input-zipcode").type("35613");
+    cy.get("#btn-next").click();
+
+    // Height and Weight
+    cy.get("#page-title").should(
+      "contain.text",
+      "What is your height and weight?"
+    );
+    cy.get("#btn-next").click();
+
+    // Error validations
+    cy.get("#error-message-height")
+      .should("be.visible")
+      .and("contain.text", "Please make a selection");
+    cy.get("#error-message-weight")
+      .should("be.visible")
+      .and("contain.text", "Please fill this in");
+    cy.get("#input-weight").type(Math.floor(Math.random() * 10).toString());
+    cy.get("#error-message-weight")
+      .should("be.visible")
+      .and("contain.text", "The value you entered is too low");
+
+    // Correct format
+    cy.get("#dropdown-height").click();
+    cy.get("#headlessui-menu-item-:re8:").click();
+    cy.get("#input-weight").clear().type("20");
+
   });
 });
