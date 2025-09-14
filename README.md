@@ -5,11 +5,13 @@ This repository contains Cypress end-to-end tests for the Insure Onboarding Flow
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Install Cypress (if not already installed):
+
    ```bash
    npm run cypress:install
    ```
@@ -51,18 +53,10 @@ During testing, a couple of bugs were identified in the application:
 
 2. **Slider Functionality**: On the Basic Life Coverage screen, the slider visual doesn't move smoothly, but the underlying value does change. This behavior is flaky and inconsistent.
 
-
-## Improvements Made
-
-- **85% code reduction** in the main test file
-- **Eliminated repetitive patterns** for form validations and assertions
-- **Improved maintainability** with centralized configuration
-- **Better readability** with descriptive method names
-- **Reusable components** that can be used across multiple test files
-
 ## Running Tests
 
 Run the tests using Cypress Test Runner:
+
 ```bash
 npm run cypress:open
 ```
