@@ -51,7 +51,10 @@ During testing, a couple of bugs were identified in the application:
 
 1. **Address Field Validation**: Even when entering a valid US address, the system sometimes displays "Please enter a valid USA location" error.
 
-2. **Slider Functionality**: On the Basic Life Coverage screen, the slider visual doesn't move smoothly, but the underlying value does change. This behavior is flaky and inconsistent.
+<img width="610" height="212" alt="image" src="https://github.com/user-attachments/assets/08ccf001-e78c-43dd-b391-5f2ad144e3af" />
+
+
+2. **Slider Functionality**: On the Basic Life Coverage screen, the slider visual doesn't move smoothly, but the underlying value does change. This behavior is flaky and inconsistent.   
 
 ## Running Tests
 
